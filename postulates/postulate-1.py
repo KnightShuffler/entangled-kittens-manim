@@ -1,7 +1,5 @@
 from manimlib.imports import *
 
-import numpy as np
-
 class Postulate1_Statement(Scene):
     def construct(self):
         title = TextMobject(r'\textbf{Postulate 1:}').move_to(LEFT_SIDE + 2*UP,aligned_edge=LEFT_SIDE)
