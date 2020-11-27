@@ -109,7 +109,44 @@ class TableOfContents(Scene):
 
 class DiracNotation(Scene):
     def construct(self):
-        pass
+        myTemplate = TexTemplate()
+        myTemplate.add_to_preamble(r'\newcommand{ket}{1}{\left|#1\right\rangle')
+        # Change arrow to ket
+        # 'usually people denote vectors by drawing an arrow above the vector's name'
+        vec = MathTex(r'\vec{v}','=',r'\begin{bmatrix} v_0 \\ v_1 \\ v_2 \\ v_3 \end{bmatrix}')
+        self.play(Write(vec),run_time=1)
+        self.wait(1)
+        
+        # 'in quantum computing literature, we denote vectors by surrounding the vector by an arrow' and calling them kets
+        ket_v = MathTex(r'|v\rangle').move_to(vec[0],aligned_edge=RIGHT)
+        ket = MathTex('\\ket{\\cdot} - \\text{``ket\'\'}',color='yellow').to_corner(UR).shift(0.5*DOWN)
+        self.play(ReplacementTransform(vec[0],ket_v),FadeIn(ket))
+        self.wait(1)
+
+
+        # We write the standard basis vectors as kets named by the position the '1' is in (starting our indexing from 0)
+        group1 = Group(ket_v,vec)
+        basis = [
+            MathTex(r'\ket{0} = \begin{bmatrix} 1 \\ 0 \\ 0 \\ 0 \end{bmatrix},'),
+            MathTex(r'\ket{1} = \begin{bmatrix} 0 \\ 1 \\ 0 \\ 0 \end{bmatrix},'),
+            MathTex(r'\ket{2} = \begin{bmatrix} 0 \\ 0 \\ 1 \\ 0 \end{bmatrix},'),
+            MathTex(r'\ket{3} = \begin{bmatrix} 0 \\ 0 \\ 0 \\ 1 \end{bmatrix}'),
+        ]
+        for i in range(1,len(basis)):
+            basis[i].next_to(basis[i-1],direction=1.1*RIGHT,aligned_edge=LEFT)
+        group2 = Group(*basis)
+        group2.move_to(ORIGIN + 2*DOWN)
+        
+        self.play(ApplyMethod(group1.shift,UP),FadeIn(group2))
+        self.wait(1)
+        
+        # And instead of column matrices, we usually write vectors as linear combinations of the basis kets
+        sum = MathTex(r'v_0\ket{0} + v_1\ket{1} + v_2\ket{2} + v_3\ket{3}').move_to(vec[1].get_edge_center(RIGHT)+0.2*RIGHT,aligned_edge=LEFT).shift(2*LEFT)
+        self.remove(ket_v)
+        self.play(ApplyMethod(vec[0].shift,2*LEFT),ApplyMethod(vec[1].shift,2*LEFT),ReplacementTransform(vec[2],sum))
+        self.wait(1)
+
+        self.play(FadeOutAndShift(Group(vec,group2,sum,ket),direction=DOWN))
 
 class DotProduct(Scene):
     def construct(self):
