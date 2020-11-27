@@ -44,19 +44,34 @@ class Postulate1_Statement(Scene):
         self.wait(1)
 
         # Highlight and explain isolated quantum system
-        self.highlight_and_explain(isolated_quantum_system, r"We're only studying the system in question,\\ ignoring everything else.")
+        self.play(FadeOutAndShift(self.highlight_and_explain(isolated_quantum_system, r"We're only studying the system in question,\\ ignoring everything else."),direction=DOWN),
+            ApplyMethod(isolated_quantum_system.scale,1.0/1.1))
+        self.wait(1)
 
         # Highlight and explain Hilbert Space
-        self.highlight_and_explain(hilbert_space,"A complex vector space with an inner product.")
+        hilbert_group = self.highlight_and_explain(hilbert_space,"A complex vector space with an inner product.")
+        vec = MathTex(r'\vec{v} = ',r'\begin{bmatrix} 1 \\ \frac{\pi}{7} \\ -1 \end{bmatrix}').next_to(hilbert_group,direction=1.5*DOWN)
+        self.play(Write(vec))
+        self.wait(1)
+        vec2 = MathTex(r'\begin{bmatrix} 1 + 2i \\ e^{i\frac{\pi}{7}} \\ -1 + 3i \end{bmatrix}').move_to(vec[1],aligned_edge=LEFT)
+        self.play(ReplacementTransform(vec[1], target_mobject=vec2))
+        self.wait(1)
+        hgroup = Group(hilbert_group,vec,vec2)
+        self.play(FadeOutAndShift(hgroup,direction=DOWN),ApplyMethod(hilbert_space.scale,1.0/1.1))
+        
 
         # Highlight and explain state space
-        self.highlight_and_explain(state_space,"The Hilbert space for the system we're studying.")
+        self.play(FadeOutAndShift(self.highlight_and_explain(state_space,"The Hilbert space for the system we're studying."),direction=DOWN),
+        ApplyMethod(state_space.scale,1.0/1.1))
+        self.wait(1)
 
         # Highlight and explain state vector
-        self.highlight_and_explain(state_vector, "The vector that describes the system at any given time.")
+        self.play(FadeOutAndShift(self.highlight_and_explain(state_vector, "The vector that describes the system at any given time."),direction=DOWN),
+        ApplyMethod(state_vector.scale,1.0/1.1))
+        self.wait(1)
         
         # Clear the screen
-        self.play(FadeOutAndShiftDown(postulate))
+        self.play(FadeOutAndShift(postulate),direction=DOWN)
 
         self.wait(1)
 
@@ -67,8 +82,9 @@ class Postulate1_Statement(Scene):
         self.play(Write(defn))
         self.wait(1)
         group = Group(title, defn)
-        self.play(FadeOut(group),ApplyMethod(base.scale,1.0/1.1))
-        self.wait(1)
+        # self.play(FadeOut(group),ApplyMethod(base.scale,1.0/1.1))
+        # self.wait(1)
+        return group
 
 class Vectors(Scene):
     def construct(self):
