@@ -106,4 +106,15 @@ class TableOfContents(Scene):
             self.wait(1)
         self.play(FadeOutAndShift(Group(*contents),direction=DOWN))
         self.wait(1)
-        
+
+class DiracNotation(Scene):
+    def construct(self):
+        pass
+
+class DotProduct(Scene):
+    def construct(self):
+        pass
+
+class Qubits(Scene):
+    def construct(self):
+        pass
