@@ -86,22 +86,24 @@ class Postulate1_Statement(Scene):
         # self.wait(1)
         return group
 
-class Vectors(Scene):
+# Table of contents to be displayed after the postulate statement
+class TableOfContents(Scene):
     def construct(self):
-        pass
+        #1 - Dirac Notation for vectors
+        #2 - The Complex Dot-Product
+        #3 - Quantum Bits
+        contents = [
+            Tex('1. Dirac Notation for vectors'),
+            Tex('2. The Complex Dot Product'),
+            Tex('3. Quantum Bits (Qubits)')
+            ]
+        contents[1].next_to(contents[0],direction=DOWN,aligned_edge=LEFT)
+        contents[2].next_to(contents[1],direction=DOWN,aligned_edge=LEFT)
+        Group(*contents).move_to(ORIGIN)
 
-    def ComplexVectorSpaces(self):
-
-        pass
-
-    def IntroduceKets(self):
-        # Usually people write vectors with arrow, in quantum computing, instead of arrows, we write kets
+        for c in contents:
+            self.play(Write(c))
+            self.wait(1)
+        self.play(FadeOutAndShift(Group(*contents),direction=DOWN))
+        self.wait(1)
         
-        # and we usually name our state vectors 'psi' because that's how Schrodinger did it
-        pass
-
-    def InnerProducts(self):
-        pass
-
-    def Bases(self):
-        pass
