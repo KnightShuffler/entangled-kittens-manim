@@ -109,10 +109,11 @@ class DiracNotation(Scene):
     def construct(self):
         myTemplate = TexTemplate()
         myTemplate.add_to_preamble(r'\newcommand{ket}{1}{\left|#1\right\rangle')
+        title = Tex('Dirac Notation for Vectors').to_edge(UP)
         # Change arrow to ket
         #~  usually people denote vectors by drawing an arrow above the vector's name
         vec = MathTex(r'\vec{v}','=',r'\begin{bmatrix} v_0 \\ v_1 \\ v_2 \\ v_3 \end{bmatrix}')
-        self.play(Write(vec),run_time=1)
+        self.play(Write(title),FadeInFrom(vec,direction=UP))
         self.wait(1)
         
         #~  in quantum computing literature, we denote vectors by surrounding the vector by an arrow' and calling them kets
@@ -144,7 +145,7 @@ class DiracNotation(Scene):
         self.play(ApplyMethod(vec[0].shift,2*LEFT),ApplyMethod(vec[1].shift,2*LEFT),ReplacementTransform(vec[2],sum))
         self.wait(1)
 
-        self.play(FadeOutAndShift(Group(vec,group2,sum,ket),direction=DOWN))
+        self.play(FadeOutAndShift(Group(title,vec,group2,sum,ket),direction=DOWN))
 
 class DotProduct(Scene):
     def construct(self):
