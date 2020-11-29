@@ -138,7 +138,7 @@ class DiracNotation(Scene):
         self.play(ApplyMethod(group1.shift,UP),FadeIn(group2))
         self.wait(1)
         
-        # And instead of column matrices, we usually write vectors as linear combinations of the basis kets
+        #~  And instead of column matrices, we usually write vectors as linear combinations of the basis kets
         sum = MathTex(r'v_0\ket{0} + v_1\ket{1} + v_2\ket{2} + v_3\ket{3}').move_to(vec[1].get_edge_center(RIGHT)+0.2*RIGHT,aligned_edge=LEFT).shift(2*LEFT)
         self.remove(ket_v)
         self.play(ApplyMethod(vec[0].shift,2*LEFT),ApplyMethod(vec[1].shift,2*LEFT),ReplacementTransform(vec[2],sum))
