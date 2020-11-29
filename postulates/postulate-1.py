@@ -82,8 +82,6 @@ class Postulate1_Statement(Scene):
         self.play(Write(defn))
         self.wait(1)
         group = Group(title, defn)
-        # self.play(FadeOut(group),ApplyMethod(base.scale,1.0/1.1))
-        # self.wait(1)
         return group
 
 # Table of contents to be displayed after the postulate statement
@@ -112,19 +110,19 @@ class DiracNotation(Scene):
         myTemplate = TexTemplate()
         myTemplate.add_to_preamble(r'\newcommand{ket}{1}{\left|#1\right\rangle')
         # Change arrow to ket
-        # 'usually people denote vectors by drawing an arrow above the vector's name'
+        #~  usually people denote vectors by drawing an arrow above the vector's name
         vec = MathTex(r'\vec{v}','=',r'\begin{bmatrix} v_0 \\ v_1 \\ v_2 \\ v_3 \end{bmatrix}')
         self.play(Write(vec),run_time=1)
         self.wait(1)
         
-        # 'in quantum computing literature, we denote vectors by surrounding the vector by an arrow' and calling them kets
+        #~  in quantum computing literature, we denote vectors by surrounding the vector by an arrow' and calling them kets
         ket_v = MathTex(r'|v\rangle').move_to(vec[0],aligned_edge=RIGHT)
         ket = MathTex('\\ket{\\cdot} - \\text{``ket\'\'}',color='yellow').to_corner(UR).shift(0.5*DOWN)
         self.play(ReplacementTransform(vec[0],ket_v),FadeIn(ket))
         self.wait(1)
 
 
-        # We write the standard basis vectors as kets named by the position the '1' is in (starting our indexing from 0)
+        #~  We write the standard basis vectors as kets named by the position the '1' is in (starting our indexing from 0)
         group1 = Group(ket_v,vec)
         basis = [
             MathTex(r'\ket{0} = \begin{bmatrix} 1 \\ 0 \\ 0 \\ 0 \end{bmatrix},'),
