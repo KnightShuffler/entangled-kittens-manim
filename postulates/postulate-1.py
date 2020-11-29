@@ -148,7 +148,134 @@ class DiracNotation(Scene):
 
 class DotProduct(Scene):
     def construct(self):
-        pass
+        #~  "To be considered a Hilbert space, we also need to define an inner product
+        #~  "In real vector spaces, we have a dot product which is defined as so:
+        # Write title
+        real_title = Tex('Real Vector Spaces').to_edge(UP)
+        # Write vectors to screen
+        vec_v = MathTex(r'\vec{v}','=',r'\begin{bmatrix} v_0 \\ v_1 \\ \vdots \\ v_{N-1} \end{bmatrix}',color='#75dc84')
+        vec_w = MathTex(',',r'\vec{w}','=',r'\begin{bmatrix} w_0 \\ w_1 \\ \vdots \\ w_{N-1} \end{bmatrix}',color=LIGHT_PINK).next_to(vec_v)
+        vec_group = VGroup(vec_v,vec_w).scale(0.8).move_to(ORIGIN)
+
+        v_matrix = vec_v[2]
+        w_matrix = vec_w[3]
+
+        self.play(Write(real_title),FadeInFrom(vec_group,direction=UP))
+        self.wait(1)
+
+        # Write dot product definition
+        dot_product = MathTex(r'\vec{v}',r'\cdot',r'\vec{w}',
+                                '=',
+                                r'\vec{v}^T',
+                                r'\vec{w}',
+                                '=',
+                                r'\sum_{k=0}^{N-1}','v_k', 'w_k').move_to(ORIGIN+0.5*DOWN)
+        dot_product[0].set_color('#75dc84')
+        dot_product[2].set_color(LIGHT_PINK)
+        vT = dot_product[4].set_color('#75dc84')
+        w  = dot_product[5].set_color(LIGHT_PINK)
+        dot_product[-2].set_color('#75dc84')
+        dot_product[-1].set_color(LIGHT_PINK)
+        self.play(ApplyMethod(vec_group.move_to,real_title.get_edge_center(DOWN)+(vec_group.get_height()/2 + 0.2)*DOWN),
+                FadeInFrom(dot_product,direction=DOWN))
+        self.wait(1)
+        vT_matrix = MathTex(r'\begin{bmatrix}v_0 & v_1 & \dots & v_{n-1}\end{bmatrix}',color='#75dc84').scale(0.8)
+        w_Copy = w_matrix.copy().next_to(vT_matrix)
+        vTw_group = VGroup(vT_matrix,w_Copy).next_to(dot_product,direction=DOWN)
+        self.play(ApplyMethod(vT.scale,1.2),ReplacementTransform(vT.copy(),vT_matrix))
+        self.wait(1)
+        self.play(ApplyMethod(vT.scale,1.0/1.2),ApplyMethod(w.scale,1.2),ReplacementTransform(w.copy(),w_Copy))
+        self.play(ApplyMethod(w.scale,1.0/1.2))
+        self.wait(1)
+
+        # Move real group to the side
+        real_group = VGroup(real_title,vec_group,dot_product,vTw_group)
+        self.play(real_group.to_edge,LEFT)
+        self.wait(1)
+
+        # Now repeat for complex spaces
+        #~  "For complex vector spaces, we define the dot product very similarly
+        myTemplate = TexTemplate()
+        myTemplate.add_to_preamble(r'\newcommand{ket}{1}{\left|#1\right\rangle')
+        myTemplate.add_to_preamble(r'\newcommand{bra}{1}{\left\langle#1\right|')
+        myTemplate.add_to_preamble(r'\newcommand{braket}{2}{\left\langle#1\right|\left.#2\right\rangle')
+
+        complex_title = Tex('Complex Vector Spaces').to_edge(UP)
+        ket_v = MathTex(r'\ket{v}=',r'\begin{bmatrix} v_0 \\ v_1 \\ \vdots \\ v_{N-1} \end{bmatrix}',color='#75dc84')
+        ket_w = MathTex(r',\ket{w}=',r'\begin{bmatrix} w_0 \\ w_1 \\ \vdots \\ w_{N-1} \end{bmatrix}',color=LIGHT_PINK).next_to(ket_v)
+        ket_group = VGroup(ket_v,ket_w).scale(0.8).move_to(ORIGIN)
+
+        v_matrix = ket_v[1]
+        w_matrix = ket_w[1]
+
+        cdot_product = MathTex(r'\ket{v}',r'\cdot',r'\ket{w}', '=',
+                                r'\ket{v}^\dagger',
+                                r'\ket{w}',
+                                r'=\sum_{k=0}^{N-1}', r'v_k^*', r'w_k').move_to(ORIGIN+0.5*DOWN)
+        cdot_product[0].set_color('#75dc84')
+        cdot_product[2].set_color(LIGHT_PINK)
+        v_bra = cdot_product[4].set_color('#75dc84')
+        w_ket = cdot_product[5].set_color(LIGHT_PINK)
+        cdot_product[-2].set_color('#75dc84')
+        cdot_product[-1].set_color(LIGHT_PINK)
+
+        vDagger_matrix = MathTex(r'\begin{bmatrix}v_0^* & v_1^* & \dots & v_{N-1}^*\end{bmatrix}',color='#75dc84').scale(0.8)
+        wMatrix_copy = w_matrix.copy().next_to(vDagger_matrix)
+        vDw_group = VGroup(vDagger_matrix,wMatrix_copy).next_to(cdot_product,direction=DOWN)
+
+        complex_group = VGroup(complex_title,ket_group,cdot_product,vDw_group).to_edge(RIGHT)
+
+        #~  "For complex vector spaces..."
+        self.play(Write(complex_title),FadeInFrom(ket_group,direction=UP))
+        self.wait(1)
+        #~  "we take the complex conjugate of each element when we transpose the matrix,
+        #   this conjugate transpose is called the adjoint or the Hermitian conjugate"
+        self.play(ApplyMethod(ket_group.move_to,complex_title.get_edge_center(DOWN)+(ket_group.get_height()/2 + 0.2)*DOWN),
+                FadeInFrom(cdot_product,direction=DOWN))
+        self.wait(1)
+        self.play(ApplyMethod(v_bra.scale,1.1),
+            ReplacementTransform(v_bra.copy(),vDagger_matrix))
+        self.wait(1)
+        self.play(ApplyMethod(v_bra.scale,1.0/1.1),
+            ApplyMethod(w_ket.scale,1.1),
+            ReplacementTransform(w_ket.copy(),wMatrix_copy))
+        self.play(ApplyMethod(w_ket.scale,1.0/1.1))
+        self.wait(1)
+        adjoint_note = MathTex(r"{}^\dagger-\text{``adjoint''}",color='yellow').to_corner(UR).shift(0.5*DOWN)
+        complex_group.remove(complex_title)
+        self.play(FadeOutAndShift(real_group,direction=DOWN),
+            ApplyMethod(complex_group.to_edge,LEFT),
+            ApplyMethod(complex_title.move_to, np.array([0,complex_title.get_center()[1], complex_title.get_center()[2]])),
+            FadeIn(adjoint_note))
+        self.wait(1)
+
+        #~  "We can rewrite the adjoint of a ket like this, and we call it a bra"
+        bra_v = MathTex(r'\bra{v}',color='#75dc84').next_to(w_ket,direction=LEFT,aligned_edge=RIGHT).shift(0.2*LEFT)
+        bra_note = VGroup(MathTex(r"\bra{\cdot}-\text{``bra''}",color='yellow'),
+                        MathTex(r'\bra{v} = \ket{v}^\dagger',color='yellow'))
+        bra_note[1].next_to(bra_note[0],direction=DOWN)
+        bra_note.next_to(adjoint_note,direction=DOWN,aligned_edge=RIGHT)
+        self.play(ReplacementTransform(v_bra,bra_v),FadeIn(bra_note))
+        self.wait(1)
+
+        #~  "And we can write the dot product like this as a shorthand"
+        braket = MathTex(r'\bra{v}',r'w\rangle').move_to(cdot_product[2],aligned_edge=RIGHT)
+        braket[0].set_color('#75dc84')
+        braket[1].set_color(LIGHT_PINK)
+        braket_note = MathTex(r'\braket{v}{w} = \ket{v}\cdot\ket{w}',color='yellow').next_to(bra_note,direction=DOWN,aligned_edge=RIGHT)
+        cdot = Group(cdot_product[0],cdot_product[1],cdot_product[2])
+        self.play(ReplacementTransform(cdot,braket),FadeIn(braket_note))
+        self.wait(1)
+
+        self.remove(braket)
+        self.remove(bra_v)
+        self.play(FadeOutAndShift(Group(ket_group,vDw_group),direction=DOWN),
+            ApplyMethod(cdot_product.shift,2.5*UP))
+        self.wait(1)
+        #~  "Let's take an example in Dirac notation"
+
+
+
 
 class Qubits(Scene):
     def construct(self):
