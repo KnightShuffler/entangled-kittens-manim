@@ -244,6 +244,8 @@ class DotProduct(Scene):
         self.wait(1)
         adjoint_note = MathTex(r"{}^\dagger-\text{``adjoint''}",color='yellow').to_corner(UR).shift(0.5*DOWN)
         complex_group.remove(complex_title)
+
+        # shift focus to complex vector spaces
         self.play(FadeOutAndShift(real_group,direction=DOWN),
             ApplyMethod(complex_group.to_edge,LEFT),
             ApplyMethod(complex_title.move_to, np.array([0,complex_title.get_center()[1], complex_title.get_center()[2]])),
@@ -260,12 +262,13 @@ class DotProduct(Scene):
         self.wait(1)
 
         #~  "And we can write the dot product like this as a shorthand"
-        braket = MathTex(r'\bra{v}',r'w\rangle').move_to(cdot_product[2],aligned_edge=RIGHT)
+        braket_group = Group(bra_v,w_ket)
+        braket = MathTex(r'\bra{v}',r'w\rangle').move_to(braket_group)
         braket[0].set_color('#75dc84')
         braket[1].set_color(LIGHT_PINK)
         braket_note = MathTex(r'\braket{v}{w} = \ket{v}\cdot\ket{w}',color='yellow').next_to(bra_note,direction=DOWN,aligned_edge=RIGHT)
-        cdot = Group(cdot_product[0],cdot_product[1],cdot_product[2])
-        self.play(ReplacementTransform(cdot,braket),FadeIn(braket_note))
+        # cdot = Group(cdot_product[0],cdot_product[1],cdot_product[2])
+        self.play(ReplacementTransform(braket_group,braket),FadeIn(braket_note))
         self.wait(1)
 
         self.remove(braket)
