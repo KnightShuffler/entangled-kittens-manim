@@ -262,133 +262,32 @@ class DotProduct(Scene):
         self.wait(1)
 
         #~  "And we can write the dot product like this as a shorthand"
-        braket_group = Group(bra_v,w_ket)
-        braket = MathTex(r'\bra{v}',r'w\rangle').move_to(braket_group)
+        braket = MathTex(r'\bra{v}',r'w\rangle').move_to(bra_v,aligned_edge=LEFT)
         braket[0].set_color('#75dc84')
         braket[1].set_color(LIGHT_PINK)
-        braket_note = MathTex(r'\braket{v}{w} = \ket{v}\cdot\ket{w}',color='yellow').next_to(bra_note,direction=DOWN,aligned_edge=RIGHT)
-        # cdot = Group(cdot_product[0],cdot_product[1],cdot_product[2])
-        self.play(ReplacementTransform(braket_group,braket),FadeIn(braket_note))
+        self.play(FadeOut(bra_v),FadeOut(w_ket),FadeIn(braket))
         self.wait(1)
 
-        self.remove(braket)
-        self.remove(bra_v)
+        cdot_product.remove(v_bra)
+        cdot_product.remove(w_ket)
+        cdot_product.add(braket)
+        
         self.play(FadeOutAndShift(Group(ket_group,vDw_group),direction=DOWN),
             ApplyMethod(cdot_product.shift,2*UP))
         self.wait(1)
-        #~  "Let's take an example in Dirac notation
-        #   v = |0>+i|1>, w = |0>+|1>"
-        eg = Tex('Example:').next_to(cdot_product,direction=DOWN,aligned_edge=LEFT)
-        v = MathTex(r'\ket{v} = ',r'\ket{0}','+','i',r'\ket{1}',color='#75dc84').next_to(eg,direction=DOWN,aligned_edge=LEFT)
-        w = MathTex(r'\ket{w} = ',r'\ket{0}','-',r'\ket{1}',color=LIGHT_PINK).next_to(v,direction=DOWN,aligned_edge=LEFT)
 
-        self.play(FadeInFrom(VGroup(eg,v,w),direction=UP))
-        self.wait(1)
+        self.example(complex_title,cdot_product,VGroup(adjoint_note,bra_note))
 
-        braket = MathTex(r'\bra{v}',r'w\rangle','=').next_to(w,direction=2*DOWN)
-        braket[0].set_color('#75dc84')
-        braket[1].set_color(LIGHT_PINK)
-        vCopy = MathTex('[',r'\ket{0}','+','i',r'\ket{1}',']',r'{}^\dagger',color='#75dc84').next_to(braket)
-        wCopy = MathTex('[',r'\ket{0}','-',r'\ket{1}',']',color=LIGHT_PINK).next_to(vCopy).shift(0.05*DOWN)
+    def example(self,title,cdot,notes):
+        # Matrix Exmaple
 
-        self.play(FadeInFrom(braket,direction=UP))
-        self.play(FadeInFrom(VGroup(vCopy,wCopy),direction=LEFT,lag_ratio=0.7))
-        self.wait(1)
+        # BraKet Example
 
-        dagger=vCopy[-1]
-        bra0 = vCopy[1]
-        bra1 = vCopy[4]
-        ket0 = wCopy[1]
-        ket1 = wCopy[3]
-
-        #~  "First, take the adjoint of v"
-        bras = [
-            MathTex(r'\bra{0}',color='#75dc84').move_to(bra0),
-            MathTex(r'\bra{1}',color='#75dc84').move_to(bra1),
-            MathTex('-',color='#75dc84').move_to(vCopy[2])
-        ]
-        self.play(FadeOut(vCopy[-1]),
-                ReplacementTransform(bra0,bras[0]),
-                ReplacementTransform(bra1,bras[1]),
-                ReplacementTransform(vCopy[2],bras[-1]),
-                ApplyMethod(wCopy.shift, 0.3*LEFT)
-                )
-        self.wait(1)
-        #~  "Remember to take the complex conjugate of the coefficients when you take the adjoint"
-        self.play(Indicate(Group(vCopy[2],vCopy[3])), Indicate(Group(v[2],v[3])))
-        self.wait(1)
-
-        #~  "Now let's distribute the terms"
-        terms = [
-            MathTex(r'\braket{0}{0}'),
-            MathTex(r'-',r'\braket{0}{1}'),
-            MathTex(r'-i',r'\braket{1}{0}'),
-            MathTex(r'+i',r'\braket{1}{1}'),
-            MathTex('=')
-        ]
-        terms[0].next_to(vCopy,direction=DOWN,aligned_edge=LEFT)
-        terms[1].next_to(terms[0],direction=RIGHT)
-        terms[2].next_to(terms[1],direction=RIGHT)
-        terms[3].next_to(terms[2],direction=RIGHT)
-        terms[-1].next_to(terms[0],direction=LEFT)
-
-        self.play(ApplyMethod(bra0.scale,1.1),
-                ApplyMethod(ket0.scale,1.1),
-                FadeInFrom(terms[0],direction=UP),
-                FadeInFrom(terms[-1],direction=LEFT)
-        )
-        self.play(ApplyMethod(ket0.scale,1.0/1.1),
-                ApplyMethod(ket1.scale,1.1),
-                FadeInFrom(terms[1],direction=UP)
-        )
-        self.play(ApplyMethod(bra0.scale,1.0/1.1),
-                ApplyMethod(bra1.scale,1.1),
-                ApplyMethod(ket1.scale,1.0/1.1),
-                ApplyMethod(ket0.scale,1.1),
-                FadeInFrom(terms[2],direction=UP)
-        )
-        self.play(ApplyMethod(ket0.scale,1.0/1.1),
-                ApplyMethod(ket1.scale,1.1),
-                FadeInFrom(terms[3],direction=UP)
-        )
-        self.wait(0.5)
-
-        #~  "Remember that the basis vectors we chose are orthogonal, so the cross terms
-        #   cancel out"
-
-        ortho_note = Tex(r'Basis vectors $\ket{0},\ket{1},\dots$ are orthogonal',color='yellow').scale(0.7).next_to(braket_note,direction=2*DOWN,aligned_edge=RIGHT)
-
-        newterms = [
-            MathTex('(1)').move_to(terms[0]),
-            MathTex('(0)').next_to(terms[1][0],direction=1.5*RIGHT,aligned_edge=LEFT),
-            MathTex('(0)').next_to(terms[2][0],direction=1.5*RIGHT,aligned_edge=LEFT),
-            MathTex('(1)').next_to(terms[3][0],direction=1.5*RIGHT,aligned_edge=LEFT)
-        ]
-
-        self.play(ApplyMethod(bra1.scale,1.0/1.1),
-                ApplyMethod(ket1.scale,1.0/1.1),
-                ReplacementTransform(terms[0],newterms[0]),
-                ReplacementTransform(terms[1][1],newterms[1]),
-                ReplacementTransform(terms[2][1],newterms[2]),
-                ReplacementTransform(terms[3][1],newterms[3]),
-                FadeIn(ortho_note)
-        )
-        self.wait(1)
-        self.remove(*newterms)
-        result = MathTex('=1+i').next_to(Group(vCopy,braket[-1]),direction=DOWN,aligned_edge=LEFT)
-        self.play( ReplacementTransform(VGroup(*terms),result) )
-        self.wait(1)
-
-        self.play(FadeOutAndShift(Group(complex_title,
-            cdot_product,
-            eg,v,w,
-            braket,vCopy,wCopy,
-            adjoint_note,
-            bra_note,
-            braket_note,
-            ortho_note,
-            result,
-            *(bras)
+        # Fade out everything
+        self.play(FadeOutAndShift(Group(
+            title,
+            cdot,
+            notes
         ),direction=DOWN))
 
 
