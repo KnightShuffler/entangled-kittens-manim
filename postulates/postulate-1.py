@@ -255,16 +255,16 @@ class DotProduct(Scene):
         #~  "We can rewrite the adjoint of a ket like this, and we call it a bra"
         bra_v = MathTex(r'\bra{v}',color='#75dc84').next_to(w_ket,direction=LEFT,aligned_edge=RIGHT).shift(0.2*LEFT)
         bra_note = VGroup(MathTex(r"\bra{\cdot}-\text{``bra''}",color='yellow'),
-                        MathTex(r'\bra{v} = \ket{v}^\dagger',color='yellow'))
+                        MathTex(r'(\alpha \ket{v})^\dagger = \alpha^* \bra{v}',color='yellow'))
         bra_note[1].next_to(bra_note[0],direction=DOWN)
         bra_note.next_to(adjoint_note,direction=DOWN,aligned_edge=RIGHT)
         self.play(ReplacementTransform(v_bra,bra_v),FadeIn(bra_note))
         self.wait(1)
 
         #~  "And we can write the dot product like this as a shorthand"
-        braket = MathTex(r'\bra{v}',r'w\rangle').move_to(bra_v,aligned_edge=LEFT)
+        braket = MathTex(r'\langle v','|',r'w\rangle').move_to(bra_v,aligned_edge=LEFT)
         braket[0].set_color('#75dc84')
-        braket[1].set_color(LIGHT_PINK)
+        braket[2].set_color(LIGHT_PINK)
         self.play(FadeOut(bra_v),FadeOut(w_ket),FadeIn(braket))
         self.wait(1)
 
@@ -281,13 +281,130 @@ class DotProduct(Scene):
     def example(self,title,cdot,notes):
         # Matrix Exmaple
 
+        # example vectors v,w
+        v = MathTex(r'\ket{v}','=',r'\begin{bmatrix}1\\i\end{bmatrix}',color='#75dc84').next_to(cdot,direction=DOWN,aligned_edge=LEFT)
+        ket_v = MathTex('=',r'\ket{0}+i\ket{1}',color='#75dc84').next_to(v,direction=RIGHT)
+
+        w = MathTex(r'\ket{w}','=',r'\begin{bmatrix}1\\1\end{bmatrix}',color=LIGHT_PINK).next_to(ket_v,direction=RIGHT).shift(0.5*RIGHT)
+        ket_w = MathTex('=',r'\ket{0}+\ket{1}',color=LIGHT_PINK).next_to(w,direction=RIGHT)
+
+        # write the matrix representations of v,w
+        self.play(Write(v),Write(w))
+        self.wait(1)
+
+        # set up mobjects for the dot product as a matrix product
+        braket = MathTex(r'\langle v','|',r'w\rangle')
+        braket[0].set_color('#75dc84')
+        braket[2].set_color(LIGHT_PINK)
+        
+        equals1 = MathTex('=').next_to(braket,direction=RIGHT)
+
+        v_mat = MathTex(r'\begin{bmatrix}1 & -i \end{bmatrix}',color='#75dc84').next_to(equals1,direction=RIGHT)
+        w_mat = MathTex(r'\begin{bmatrix}1 \\ 1 \end{bmatrix}',color=LIGHT_PINK).next_to(v_mat,direction=RIGHT)
+
+        equals2= MathTex('=').next_to(w_mat,direction=RIGHT)
+        result= MathTex('1-i').next_to(equals2,direction=RIGHT)
+
+        eg_group = VGroup(braket,equals1,
+            v_mat,w_mat,equals2,
+            result
+            ).next_to(v,direction=DOWN,aligned_edge=LEFT)
+        eg_group.remove(v_mat,w_mat)
+
+        copies = VGroup(v[2].copy(),w[2].copy())
+        eg_group.add(copies)
+
+
+        # Animate the matrix product
+        self.play(Write(braket),Write(equals1))
+        self.wait(1)
+        self.play(Transform(copies[0],v_mat))
+        self.wait(1)
+        self.play(ApplyMethod(copies[1].move_to,w_mat))
+        self.wait(1)
+        self.play(Write(equals2),Write(result))
+        self.wait(1)
+
         # BraKet Example
+
+        # Introduce the dirac notation for v,w
+        self.play(Write(ket_v),Write(ket_w))
+        self.wait(1)
+        self.play(FadeOutAndShift(Group(equals2,result),direction=DOWN))
+        self.wait(1)
+
+        # Set up dirac product mobjects
+        adj_v = MathTex('(',r'\ket{0}',r'+i\ket{1}',r')^\dagger',color='#75dc84').next_to(equals1,direction=RIGHT)
+        bra_v = MathTex('(',r'\bra{0}',r'-i\bra{1}',')',color='#75dc84').next_to(equals1,direction=RIGHT)
+        ket_w_copy = MathTex('(',r'\ket{0}',r'+\ket{1}',')',color=LIGHT_PINK).next_to(bra_v,direction=RIGHT)
+
+        pairs = [
+            VGroup(bra_v[1].copy(),ket_w_copy[1].copy()),
+            VGroup(bra_v[1].copy(),ket_w_copy[2].copy()),
+            VGroup(bra_v[2].copy(),ket_w_copy[1].copy()),
+            VGroup(bra_v[2].copy(),ket_w_copy[2].copy()),
+        ]
+
+        brakets = VGroup(
+            MathTex(r'\langle 0','|',r'0\rangle'),
+            MathTex('+',r'\langle 0','|',r'1\rangle'),
+            MathTex('+',r'(-i)\langle 1','|',r'0\rangle'),
+            MathTex('+',r'(-i)\langle 1','|',r'1\rangle')
+        )
+        brakets[0][0].set_color('#75dc84')
+        brakets[0][-1].set_color(LIGHT_PINK)
+        for i in range(1,4):
+            brakets[i][1].set_color('#75dc84')
+            brakets[i][-1].set_color(LIGHT_PINK)
+            brakets[i].next_to(brakets[i-1],direction=RIGHT)
+        
+        brakets.next_to(copies[0],direction=DOWN,aligned_edge=LEFT)
+
+        equals2.move_to(np.array([
+            equals1.get_center()[0],
+            brakets.get_center()[1],
+            0.0
+        ]))
+
+        result.next_to(equals2,direction=RIGHT)
+
+        ortho_note = Tex(r'$\ket{0},\ket{1},$ etc. form an orthonormal basis',
+            color=YELLOW).scale(0.7).next_to(notes,direction=DOWN,aligned_edge=RIGHT).shift(2*DOWN)
+
+        # Transform matrices into bras and kets
+        self.play(Transform(copies[0],adj_v), ApplyMethod(copies[1].next_to,adj_v))
+        self.wait(1)
+        self.play(Transform(copies[0],bra_v))
+        self.wait(1)
+        self.play(Transform(copies[1],ket_w_copy))
+        self.wait(1)
+
+        # FOIL the product
+        self.play(FadeInFrom(equals2,direction=UP))
+        for i in range(0,4):
+            self.play(Transform(pairs[i],brakets[i]))
+            self.wait(0.5)
+
+        # Eliminate cross terms
+        self.play(Indicate(pairs[1]),Indicate(pairs[2]),FadeInFrom(ortho_note,direction=UP))
+        self.play(FadeOutAndShift(pairs[1],direction=DOWN),
+            FadeOutAndShift(pairs[2],direction=DOWN),
+            ApplyMethod(pairs[3].next_to, pairs[0]))
+        self.wait(1)
+        self.play(Transform(Group(pairs[0],pairs[3]),result))
+        self.wait(1)
+        
+        
+        eg_group.add(ket_v,ket_w,ortho_note,pairs[0],pairs[3])
 
         # Fade out everything
         self.play(FadeOutAndShift(Group(
             title,
             cdot,
-            notes
+            notes,
+            v,w,
+            eg_group,
+            ortho_note
         ),direction=DOWN))
 
 
