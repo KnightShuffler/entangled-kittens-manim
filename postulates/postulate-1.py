@@ -273,22 +273,24 @@ class DotProduct(Scene):
         cdot_product.add(braket)
         
         self.play(FadeOutAndShift(Group(ket_group,vDw_group),direction=DOWN),
-            ApplyMethod(cdot_product.shift,2*UP))
+            ApplyMethod(cdot_product.shift,2.3*UP))
         self.wait(1)
 
         self.example(complex_title,cdot_product,VGroup(adjoint_note,bra_note))
 
     def example(self,title,cdot,notes):
         # Matrix Exmaple
+        eg = Tex(r"\textbf{Example:}").scale(1.2).next_to(cdot,direction=DOWN,aligned_edge=LEFT)
 
         # example vectors v,w
-        v = MathTex(r'\ket{v}','=',r'\begin{bmatrix}1\\i\end{bmatrix}',color='#75dc84').next_to(cdot,direction=DOWN,aligned_edge=LEFT)
+        v = MathTex(r'\ket{v}','=',r'\begin{bmatrix}1\\i\end{bmatrix}',color='#75dc84').next_to(eg,direction=DOWN,aligned_edge=LEFT)
         ket_v = MathTex('=',r'\ket{0}+i\ket{1}',color='#75dc84').next_to(v,direction=RIGHT)
 
         w = MathTex(r'\ket{w}','=',r'\begin{bmatrix}1\\1\end{bmatrix}',color=LIGHT_PINK).next_to(ket_v,direction=RIGHT).shift(0.5*RIGHT)
         ket_w = MathTex('=',r'\ket{0}+\ket{1}',color=LIGHT_PINK).next_to(w,direction=RIGHT)
 
         # write the matrix representations of v,w
+        self.play(Write(eg))
         self.play(Write(v),Write(w))
         self.wait(1)
 
@@ -369,7 +371,7 @@ class DotProduct(Scene):
         result.next_to(equals2,direction=RIGHT)
 
         ortho_note = Tex(r'$\ket{0},\ket{1},$ etc. form an orthonormal basis',
-            color=YELLOW).scale(0.7).next_to(notes,direction=DOWN,aligned_edge=RIGHT).shift(2*DOWN)
+            color=YELLOW).scale(0.7).next_to(notes,direction=DOWN,aligned_edge=RIGHT).shift(2.3*DOWN)
 
         # Transform matrices into bras and kets
         self.play(Transform(copies[0],adj_v), ApplyMethod(copies[1].next_to,adj_v))
@@ -387,6 +389,7 @@ class DotProduct(Scene):
 
         # Eliminate cross terms
         self.play(Indicate(pairs[1]),Indicate(pairs[2]),FadeInFrom(ortho_note,direction=UP))
+        self.wait(0.2)
         self.play(FadeOutAndShift(pairs[1],direction=DOWN),
             FadeOutAndShift(pairs[2],direction=DOWN),
             ApplyMethod(pairs[3].next_to, pairs[0]))
@@ -395,7 +398,7 @@ class DotProduct(Scene):
         self.wait(1)
         
         
-        eg_group.add(ket_v,ket_w,ortho_note,pairs[0],pairs[3])
+        eg_group.add(eg,ket_v,ket_w,ortho_note,pairs[0],pairs[3])
 
         # Fade out everything
         self.play(FadeOutAndShift(Group(
